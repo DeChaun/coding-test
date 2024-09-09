@@ -1,0 +1,16 @@
+volumes:
+  logs:
+    driver: local
+
+services:
+  coding-test-php:
+    container_name: coding-test-php
+    image: tl-coding-test/php:8.3
+    working_dir: /var/www
+    command: php -S 0.0.0.0:8080 -p -t public
+      - DOMAIN_NAME=${APP_BASEURL:-coding-test.localhost},www.coding-test.localhost
+    environment:
+      docker: "true"
+    volumes:
+      - .:/var/www
+      - logs:/var/www/logs
