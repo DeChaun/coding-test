@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\Actions;
 
 use App\Domain\DomainException\DomainRecordNotFoundException;
+use http\Exception\InvalidArgumentException;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Log\LoggerInterface;
@@ -19,6 +20,9 @@ abstract class Action
 
     protected Response $response;
 
+    /**
+     * @var array<int, mixed>
+     */
     protected array $args;
 
     public function __construct(LoggerInterface $logger)
@@ -27,6 +31,7 @@ abstract class Action
     }
 
     /**
+     * @param array<int, mixed> $args
      * @throws HttpNotFoundException
      * @throws HttpBadRequestException
      */
@@ -49,7 +54,10 @@ abstract class Action
      */
     abstract protected function action(): Response;
 
-    protected function getFormData(): object|array
+    /**
+     * @return null|object|array<int, mixed>
+     */
+    protected function getFormData(): null|object|array
     {
         return $this->request->getParsedBody();
     }
@@ -68,9 +76,9 @@ abstract class Action
     }
 
     /**
-     * @param array|object|null $data
+     * @param array<int, mixed>|object|null $data
      */
-    protected function respondWithData($data = null, int $statusCode = 200): Response
+    protected function respondWithData(array|object|null $data = null, int $statusCode = 200): Response
     {
         $payload = new ActionPayload($statusCode, $data);
 
@@ -80,6 +88,10 @@ abstract class Action
     protected function respond(ActionPayload $payload): Response
     {
         $json = json_encode($payload, JSON_PRETTY_PRINT);
+        if (false === $json) {
+            throw new InvalidArgumentException('The payload could not be parsed to json.');
+        }
+
         $this->response->getBody()->write($json);
 
         return $this->response
