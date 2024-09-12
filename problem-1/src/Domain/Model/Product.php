@@ -9,7 +9,7 @@ final readonly class Product
     public function __construct(
         private string $id,
         private string $description,
-        private Category $productCategory,
+        private int $categoryId,
         private float $price,
     ) {
     }
@@ -24,9 +24,9 @@ final readonly class Product
         return $this->description;
     }
 
-    public function getProductCategory(): Category
+    public function getCategoryId(): int
     {
-        return $this->productCategory;
+        return $this->categoryId;
     }
 
     public function getPrice(): float

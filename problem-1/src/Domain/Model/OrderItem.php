@@ -33,4 +33,14 @@ final readonly class OrderItem
     {
         return $this->totalPrice;
     }
+
+    public function toArray(): array
+    {
+        return [
+            'product' => $this->product->getId(),
+            'quantity' => $this->quantity,
+            'unitPrice' => $this->unitPrice,
+            'totalPrice' => $this->totalPrice,
+        ];
+    }
 }

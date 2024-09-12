@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Domain\Model;
 
-final class Order
+final readonly class Order
 {
     public function __construct(
         private int $id,
@@ -35,5 +35,15 @@ final class Order
     public function getTotal(): float
     {
         return $this->total;
+    }
+
+    public function toArray(): array
+    {
+        return [
+            'id' => $this->id,
+            'customer-id' => $this->id,
+            'items' => array_map(fn (OrderItem $orderItem) => $orderItem->toArray(), $this->orderItems),
+            'total' => $this->total,
+        ];
     }
 }

@@ -3,10 +3,18 @@
 declare(strict_types=1);
 
 use App\Application\Command\CreateOrderFromRequestDataCommand;
-use App\Application\Command\CreateOrderFromRequestDataCommandHandler;
+use App\Application\Command\OrderFactory;
 use App\Application\Command\CreateOrderItemFromRequestDataCommand;
-use App\Application\Command\CreateOrderItemFromRequestDataCommandHandler;
+use App\Application\Command\OrderItemFactory;
+use App\Application\Command\Product\GetCustomer;
+use App\Application\Command\Product\GetCustomerHandler;
+use App\Application\Command\Product\GetProduct;
+use App\Application\Command\Product\GetProductHandler;
 use App\Application\Settings\SettingsInterface;
+use App\Domain\Repository\CustomerRepository as CustomerRepositoryInterface;
+use App\Domain\Repository\ProductRepository as ProductRepositoryInterface;
+use App\Infrastructure\Repository\FileCustomerRepository;
+use App\Infrastructure\Repository\FileProductRepository;
 use DI\ContainerBuilder;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
@@ -36,14 +44,8 @@ return function (ContainerBuilder $containerBuilder) {
         },
         MessageBusInterface::class => function (ContainerInterface $c) {
             $containerHandlerLocator = new HandlersLocator([
-                CreateOrderFromRequestDataCommand::class => [
-                    fn (CreateOrderFromRequestDataCommand $command) =>
-                        $c->get(CreateOrderFromRequestDataCommandHandler::class)($command)
-                ],
-                CreateOrderItemFromRequestDataCommand::class => [
-                    fn (CreateOrderItemFromRequestDataCommand $command) =>
-                        $c->get(CreateOrderItemFromRequestDataCommandHandler::class)($command)
-                ],
+                GetProduct::class => [ fn (GetProduct $command) => $c->get(GetProductHandler::class)($command) ],
+                GetCustomer::class => [ fn (GetCustomer $command) => $c->get(GetCustomerHandler::class)($command) ],
             ]);
 
             $middlewares = [
@@ -51,6 +53,12 @@ return function (ContainerBuilder $containerBuilder) {
             ];
 
             return new MessageBus($middlewares);
+        },
+        CustomerRepositoryInterface::class => function (ContainerInterface $c) {
+            return new FileCustomerRepository();
+        },
+        ProductRepositoryInterface::class => function (ContainerInterface $c) {
+            return new FileProductRepository();
         },
     ]);
 };
