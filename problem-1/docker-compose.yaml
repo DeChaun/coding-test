@@ -7,10 +7,11 @@ services:
     container_name: coding-test-php
     image: tl-coding-test/php:8.3
     working_dir: /var/www
-    command: php -S 0.0.0.0:8080 -p -t public
-      - DOMAIN_NAME=${APP_BASEURL:-coding-test.localhost},www.coding-test.localhost
+    command: php -S 0.0.0.0:9000 -t public
     environment:
-      docker: "true"
+      - DOMAIN_NAME=${APP_BASEURL:-coding-test.localhost},www.coding-test.localhost
     volumes:
       - .:/var/www
       - logs:/var/www/logs
+    ports:
+      - "9000:9000"
