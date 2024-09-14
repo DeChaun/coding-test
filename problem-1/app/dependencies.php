@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Application\Command\CreateOrderFromRequestDataCommand;
-use App\Application\Command\OrderFactory;
-use App\Application\Command\CreateOrderItemFromRequestDataCommand;
-use App\Application\Command\OrderItemFactory;
 use App\Application\Command\Product\GetCustomer;
 use App\Application\Command\Product\GetCustomerHandler;
 use App\Application\Command\Product\GetProduct;

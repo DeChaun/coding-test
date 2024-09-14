@@ -34,6 +34,9 @@ final readonly class OrderItem
         return $this->totalPrice;
     }
 
+    /**
+     * @return array<string, int|float|string>
+     */
     public function toArray(): array
     {
         return [

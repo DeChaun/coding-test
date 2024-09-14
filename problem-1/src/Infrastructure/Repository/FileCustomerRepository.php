@@ -17,8 +17,11 @@ final class FileCustomerRepository implements CustomerRepository
     public function getById(string $customerId): Customer
     {
         $customerData = file_get_contents(__DIR__ . '/../../../data/customers.json');
+        assert($customerData !== false);
 
         $customerData = json_decode($customerData, true);
+        assert(is_array($customerData));
+
         foreach ($customerData as $customer) {
             if (array_key_exists('id', $customer) && $customer['id'] === $customerId) {
                 return $this->mapToCustomer($customer);
@@ -28,6 +31,9 @@ final class FileCustomerRepository implements CustomerRepository
         throw CustomerNotFoundException::invalidCustomerId($customerId);
     }
 
+    /**
+     * @param array<string, int|string|float> $customerData
+     */
     private function mapToCustomer(array $customerData): Customer
     {
         assert(array_key_exists('id', $customerData) && is_numeric($customerData['id']));
@@ -35,10 +41,14 @@ final class FileCustomerRepository implements CustomerRepository
         assert(array_key_exists('since', $customerData));
         assert(array_key_exists('revenue', $customerData) && is_numeric($customerData['revenue']));
 
+        $since = DateTime::createFromFormat('Y-m-d', (string) $customerData['since']);
+
+        assert($since instanceof DateTime);
+
         return new Customer(
             (int) $customerData['id'],
-            $customerData['name'],
-            DateTime::createFromFormat('Y-m-d', $customerData['since']),
+            (string) $customerData['name'],
+            $since,
             (float) $customerData['revenue'],
         );
     }

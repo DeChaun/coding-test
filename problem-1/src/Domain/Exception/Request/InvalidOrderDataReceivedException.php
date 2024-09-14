@@ -8,6 +8,9 @@ use App\Domain\Exception\DomainException;
 
 final class InvalidOrderDataReceivedException extends DomainException
 {
+    /**
+     * @param string[] $requiredKeys
+     */
     public static function missingKey(string $requiredKey, array $requiredKeys): self
     {
         return new self(sprintf(
@@ -17,11 +20,11 @@ final class InvalidOrderDataReceivedException extends DomainException
         ));
     }
 
-    public static function invalidValueForKey(mixed $id, string $key): self
+    public static function invalidValueForKey(int|float|string $value, string $key): self
     {
         return new self(sprintf(
             'Invalid value "%s" provided for key "%s"',
-            strval($id),
+            $value,
             $key,
         ));
     }

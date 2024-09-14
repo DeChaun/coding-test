@@ -6,6 +6,9 @@ namespace App\Domain\Model;
 
 final readonly class Order
 {
+    /**
+     * @param OrderItem[] $orderItems
+     */
     public function __construct(
         private int $id,
         private Customer $customer,
@@ -27,6 +30,9 @@ final readonly class Order
         return $this->customer;
     }
 
+    /**
+     * @return OrderItem[]
+     */
     public function getOrderItems(): array
     {
         return $this->orderItems;
@@ -37,11 +43,14 @@ final readonly class Order
         return $this->total;
     }
 
+    /**
+     * @return array<string, array<array<string, float|int|string>>|float|int>
+     */
     public function toArray(): array
     {
         return [
             'id' => $this->id,
-            'customer-id' => $this->id,
+            'customer-id' => $this->customer->getId(),
             'items' => array_map(fn (OrderItem $orderItem) => $orderItem->toArray(), $this->orderItems),
             'total' => $this->total,
         ];

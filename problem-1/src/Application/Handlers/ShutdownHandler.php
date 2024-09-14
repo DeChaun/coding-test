@@ -47,6 +47,9 @@ class ShutdownHandler
         $responseEmitter->emit($response);
     }
 
+    /**
+     * @param array<string, int|string> $error
+     */
     private function getErrorMessage(array $error): string
     {
         if (!$this->displayErrorDetails) {
