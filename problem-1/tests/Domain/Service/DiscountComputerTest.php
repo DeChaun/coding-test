@@ -7,6 +7,7 @@ namespace Tests\Domain\Service;
 use App\Application\Command\Discount\ComputeDiscount;
 use App\Application\Command\Discount\ComputeDiscountHandler;
 use App\Domain\Model\Customer;
+use App\Domain\Model\Discount\BuyXGetYItemsFreeDiscount;
 use App\Domain\Model\Discount\HighTotalRevenueDiscount;
 use App\Domain\Model\Order;
 use App\Domain\Model\OrderItem;
@@ -44,6 +45,7 @@ final class DiscountComputerTest extends TestCase
 
         // Assert every discount is available only once
         $requiredDiscounts = [
+            BuyXGetYItemsFreeDiscount::class,
             HighTotalRevenueDiscount::class,
         ];
 
@@ -65,12 +67,14 @@ final class DiscountComputerTest extends TestCase
         $discountOrder = $this->handle(new ComputeDiscount($order));
 
         $this->assertIsArray($discountOrder->getDiscounts());
-        $this->assertCount(1, $discountOrder->getDiscounts());
+        $this->assertCount(2, $discountOrder->getDiscounts());
 
-        $this->assertEquals(799.20, $discountOrder->getDiscountedTotal());
-        $this->assertEquals(88.8, $discountOrder->getDiscountAmount());
+        $this->assertEquals(684, $discountOrder->getDiscountedTotal());
+        $this->assertEquals(204, $discountOrder->getDiscountAmount());
         $this->assertEquals(888, $discountOrder->getTotal());
     }
+
+
 
     private function getMockOrder(): Order
     {
@@ -80,19 +84,19 @@ final class DiscountComputerTest extends TestCase
             [
                 new OrderItem(
                     new Product('A123', 'Test description', 2, 20),
-                    40,
+                    40, // 6 * 20 = 120
                     20,
                     800,
                 ),
                 new OrderItem(
                     new Product('A124', 'Test description', 2, 8),
-                    10,
+                    10, // 1 * 8 = 8
                     8,
                     80,
                 ),
                 new OrderItem(
                     new Product('A125', 'Test description', 2, 2),
-                    4,
+                    4, // 0
                     2,
                     8,
                 ),

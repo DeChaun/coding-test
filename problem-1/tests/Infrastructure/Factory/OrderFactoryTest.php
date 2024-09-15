@@ -17,7 +17,6 @@ use App\Infrastructure\Repository\InMemoryProductRepository;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Handler\HandlersLocator;
 use Symfony\Component\Messenger\MessageBus;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Messenger\Middleware\HandleMessageMiddleware;
 
 final class OrderFactoryTest extends TestCase
