@@ -4,22 +4,38 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\Discount;
 
+use App\Domain\Configurator\Discount\DiscountOptionConfigurator;
+use App\Domain\Configurator\Discount\HighTotalRevenueOptionConfigurator as Configurator;
 use App\Domain\Enum\DiscountType;
 use App\Domain\Model\Order;
 
 final readonly class HighTotalRevenueDiscount implements Discount
 {
-    private const int TOTAL_REVENUE_BOUNDARY = 1000;
-    private const int DISCOUNT_PERCENTAGE = 10;
+    private int $totalRevenueBoundary;
+    private int $discountPercentage;
 
     public function __construct(
-        private Order $order
+        private Order $order,
+        DiscountOptionConfigurator $optionConfigurator,
     ) {
+        assert($optionConfigurator instanceof Configurator);
+
+        $options = $optionConfigurator->getOptions();
+
+        assert(array_key_exists(Configurator::CONFIG_KEY_TOTAL_REVENUE_BOUNDARY, $options));
+        assert(is_int($options[Configurator::CONFIG_KEY_TOTAL_REVENUE_BOUNDARY]));
+
+        $this->totalRevenueBoundary = $options[Configurator::CONFIG_KEY_TOTAL_REVENUE_BOUNDARY];
+
+        assert(array_key_exists(Configurator::CONFIG_KEY_DISCOUNT_PERCENTAGE, $options));
+        assert(is_int($options[Configurator::CONFIG_KEY_DISCOUNT_PERCENTAGE]));
+
+        $this->discountPercentage = $options[Configurator::CONFIG_KEY_DISCOUNT_PERCENTAGE];
     }
 
     public function isApplicable(): bool
     {
-        return $this->order->getCustomer()->getRevenue() > self::TOTAL_REVENUE_BOUNDARY;
+        return $this->order->getCustomer()->getRevenue() > $this->totalRevenueBoundary;
     }
 
     public function getDiscountAmount(): ?float
@@ -27,7 +43,7 @@ final readonly class HighTotalRevenueDiscount implements Discount
         $total = $this->order->getDiscountedTotal() ?? $this->order->getTotal();
 
         // Round to 4 decimals as this may introduce floating-point issues (e.g. rounding to 88.80000000000001)
-        return round($total * (self::DISCOUNT_PERCENTAGE / 100), 4);
+        return round($total * ($this->discountPercentage / 100), 4);
     }
 
     public function getType(): DiscountType
@@ -38,9 +54,11 @@ final readonly class HighTotalRevenueDiscount implements Discount
     public function getExplanation(): string
     {
         return sprintf(
-            'A customer who has already bought for over € %s, gets a discount of %s%% on the whole order.',
-            self::TOTAL_REVENUE_BOUNDARY,
-            self::DISCOUNT_PERCENTAGE,
+            'A customer who has already bought for over € %s, gets a discount of %s%% on the whole order. ' .
+            'This results in € %s discount',
+            $this->totalRevenueBoundary,
+            $this->discountPercentage,
+            $this->getDiscountAmount(),
         );
     }
 }

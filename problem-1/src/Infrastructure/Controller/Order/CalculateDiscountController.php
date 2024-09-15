@@ -9,14 +9,18 @@ use App\Infrastructure\Factory\OrderFactory;
 use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
+use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-final readonly class CalculateDiscountController
+final class CalculateDiscountController
 {
+    use HandleTrait;
+
     public function __construct(
-        private OrderFactory $orderFactory,
-        private MessageBusInterface $commandBus,
+        private readonly OrderFactory $orderFactory,
+        MessageBusInterface $queryBus,
     ) {
+        $this->messageBus = $queryBus;
     }
 
     /**
@@ -29,7 +33,7 @@ final readonly class CalculateDiscountController
 
         $order = $this->orderFactory->fromApiData($body);
 
-        $discountOrder = $this->commandBus->dispatch(new ComputeDiscount($order));
+        $discountOrder = $this->handle(new ComputeDiscount($order));
 
         $response->getBody()->write('test response');
         return $response->withHeader('Content-Type', 'application/json');

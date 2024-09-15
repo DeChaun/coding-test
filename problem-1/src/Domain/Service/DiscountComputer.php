@@ -16,8 +16,8 @@ final class DiscountComputer
     public function __invoke(Order $order, array $availableDiscounts): Order
     {
         foreach ($availableDiscounts as $discountType) {
-            $discountClassName = $discountType->mapToClassName();
-            $discount          = new $discountClassName($order);
+            $discountClassName = $discountType->getClass();
+            $discount          = new $discountClassName($order, $discountType->getConfigurator());
 
             assert($discount instanceof Discount);
 

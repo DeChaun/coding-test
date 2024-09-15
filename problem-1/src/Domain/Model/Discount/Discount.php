@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Domain\Model\Discount;
 
+use App\Domain\Configurator\Discount\DiscountOptionConfigurator;
 use App\Domain\Enum\DiscountType;
 use App\Domain\Model\Order;
 
 interface Discount
 {
-    public function __construct(Order $order);
+    public function __construct(
+        Order $order,
+        DiscountOptionConfigurator $optionConfigurator,
+    );
 
     public function isApplicable(): bool;
 
