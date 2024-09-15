@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Application\Command\Discount\ComputeDiscount;
+use App\Application\Command\Discount\ComputeDiscountHandler;
 use App\Application\Command\Product\GetCustomer;
 use App\Application\Command\Product\GetCustomerHandler;
 use App\Application\Command\Product\GetProduct;
@@ -42,6 +44,9 @@ return function (ContainerBuilder $containerBuilder) {
             $containerHandlerLocator = new HandlersLocator([
                 GetProduct::class => [ fn (GetProduct $command) => $c->get(GetProductHandler::class)($command) ],
                 GetCustomer::class => [ fn (GetCustomer $command) => $c->get(GetCustomerHandler::class)($command) ],
+                ComputeDiscount::class => [
+                    fn (ComputeDiscount $command) => $c->get(ComputeDiscountHandler::class)($command)
+                ],
             ]);
 
             $middlewares = [
