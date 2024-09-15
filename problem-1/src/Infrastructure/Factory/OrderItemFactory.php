@@ -17,6 +17,11 @@ final class OrderItemFactory
 {
     use HandleTrait;
 
+    private const string API_KEY_PRODUCT_ID = 'product-id';
+    private const string API_KEY_QUANTITY   = 'quantity';
+    private const string API_KEY_UNIT_PRICE = 'unit-price';
+    private const string API_KEY_TOTAL      = 'total';
+
     public function __construct(
         MessageBusInterface $queryBus,
     ) {
@@ -32,13 +37,13 @@ final class OrderItemFactory
         $this->validateData($orderItemData);
 
         /** @var Product $product */
-        $product = $this->handle(new GetProduct((string) $orderItemData['product-id'])); // @phpstan-ignore-line
+        $product = $this->handle(new GetProduct((string) $orderItemData[self::API_KEY_PRODUCT_ID])); // @phpstan-ignore-line
 
         return new OrderItem(
             $product,
-            Quantity::create($orderItemData['quantity']),       // @phpstan-ignore-line
-            Price::create($orderItemData['unit-price']),        // @phpstan-ignore-line
-            Price::create($orderItemData['total']),             // @phpstan-ignore-line
+            Quantity::create($orderItemData[self::API_KEY_QUANTITY]),       // @phpstan-ignore-line
+            Price::create($orderItemData[self::API_KEY_UNIT_PRICE]),        // @phpstan-ignore-line
+            Price::create($orderItemData[self::API_KEY_TOTAL]),             // @phpstan-ignore-line
         );
     }
 
@@ -49,10 +54,10 @@ final class OrderItemFactory
     private function validateData(array $orderItemData): void
     {
         $requiredKeys = [
-            'product-id',
-            'quantity',
-            'unit-price',
-            'total',
+            self::API_KEY_PRODUCT_ID,
+            self::API_KEY_QUANTITY,
+            self::API_KEY_UNIT_PRICE,
+            self::API_KEY_TOTAL,
         ];
 
         foreach ($requiredKeys as $requiredKey) {
@@ -61,10 +66,10 @@ final class OrderItemFactory
             }
         }
 
-        $this->validateProductId($orderItemData['product-id']);
-        $this->validateQuantity($orderItemData['quantity']);
-        $this->validateUnitPrice($orderItemData['unit-price']);
-        $this->validateTotal($orderItemData['total']);
+        $this->validateProductId($orderItemData[self::API_KEY_PRODUCT_ID]);
+        $this->validateQuantity($orderItemData[self::API_KEY_QUANTITY]);
+        $this->validateUnitPrice($orderItemData[self::API_KEY_UNIT_PRICE]);
+        $this->validateTotal($orderItemData[self::API_KEY_TOTAL]);
     }
 
     /**
@@ -74,7 +79,7 @@ final class OrderItemFactory
     {
         if (false === is_string($productId)) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderItemDataReceivedException::invalidValueForKey((string) $productId, 'product-id');
+            throw InvalidOrderItemDataReceivedException::invalidValueForKey((string) $productId, self::API_KEY_PRODUCT_ID);
         }
     }
 
@@ -85,7 +90,7 @@ final class OrderItemFactory
     {
         if (false === is_numeric($quantity) || intval($quantity) <= 0) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderItemDataReceivedException::invalidValueForKey((int) $quantity, 'quantity');
+            throw InvalidOrderItemDataReceivedException::invalidValueForKey((int) $quantity, self::API_KEY_QUANTITY);
         }
     }
 
@@ -96,7 +101,7 @@ final class OrderItemFactory
     {
         if (false === is_numeric($unitPrice)) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderItemDataReceivedException::invalidValueForKey((float) $unitPrice, 'unit-price');
+            throw InvalidOrderItemDataReceivedException::invalidValueForKey((float) $unitPrice, self::API_KEY_UNIT_PRICE);
         }
     }
 
@@ -107,7 +112,7 @@ final class OrderItemFactory
     {
         if (false === is_numeric($total)) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderItemDataReceivedException::invalidValueForKey((float) $total, 'total');
+            throw InvalidOrderItemDataReceivedException::invalidValueForKey((float) $total, self::API_KEY_TOTAL);
         }
     }
 }

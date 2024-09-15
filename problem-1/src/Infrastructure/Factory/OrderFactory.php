@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Infrastructure\Factory;
 
 use App\Application\Command\Product\GetCustomer;
+use App\Domain\Exception\InvalidPriceException;
 use App\Domain\Exception\Request\InvalidOrderDataReceivedException;
 use App\Domain\Exception\Request\InvalidOrderItemDataReceivedException;
 use App\Domain\Model\Customer;
@@ -19,6 +20,11 @@ final class OrderFactory
 {
     use HandleTrait;
 
+    private const string API_KEY_ID          = 'id';
+    private const string API_KEY_CUSTOMER_ID = 'customer-id';
+    private const string API_KEY_ITEMS       = 'items';
+    private const string API_KEY_TOTAL       = 'total';
+
     public function __construct(
         private readonly OrderItemFactory $orderItemFactory,
         MessageBusInterface $queryBus,
@@ -30,16 +36,17 @@ final class OrderFactory
      * @param array<string|int, int|string|float|array<int|string, mixed>> $orderData
      * @throws InvalidOrderDataReceivedException
      * @throws InvalidOrderItemDataReceivedException
+     * @throws InvalidPriceException
      */
     public function fromApiData(array $orderData): Order
     {
         $this->validateData($orderData);
 
         return new Order(
-            Id::create($orderData['id']),                            // @phpstan-ignore-line
-            $this->getCustomer((string) $orderData['customer-id']),  // @phpstan-ignore-line
-            $this->getOrderItems($orderData['items']),               // @phpstan-ignore-line
-            Price::create($orderData['total']),                      // @phpstan-ignore-line
+            Id::create($orderData[self::API_KEY_ID]),                            // @phpstan-ignore-line
+            $this->getCustomer((string) $orderData[self::API_KEY_CUSTOMER_ID]),  // @phpstan-ignore-line
+            $this->getOrderItems($orderData[self::API_KEY_ITEMS]),               // @phpstan-ignore-line
+            Price::create($orderData[self::API_KEY_TOTAL]),                      // @phpstan-ignore-line
         );
     }
 
@@ -50,10 +57,10 @@ final class OrderFactory
     private function validateData(array $orderData): void
     {
         $requiredKeys = [
-            'id',
-            'customer-id',
-            'items',
-            'total',
+            self::API_KEY_ID,
+            self::API_KEY_CUSTOMER_ID,
+            self::API_KEY_ITEMS,
+            self::API_KEY_TOTAL,
         ];
 
         foreach ($requiredKeys as $requiredKey) {
@@ -62,9 +69,9 @@ final class OrderFactory
             }
         }
 
-        $this->validateId($orderData['id']);
-        $this->validateCustomer($orderData['customer-id']);
-        $this->validateTotal($orderData['total']);
+        $this->validateId($orderData[self::API_KEY_ID]);
+        $this->validateCustomer($orderData[self::API_KEY_CUSTOMER_ID]);
+        $this->validateTotal($orderData[self::API_KEY_TOTAL]);
     }
 
     /**
@@ -74,7 +81,7 @@ final class OrderFactory
     {
         if (false === is_numeric($id) || intval($id) <= 0) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderDataReceivedException::invalidValueForKey((int) $id, 'id');
+            throw InvalidOrderDataReceivedException::invalidValueForKey((int) $id, self::API_KEY_ID);
         }
     }
 
@@ -85,7 +92,7 @@ final class OrderFactory
     {
         if (false === is_numeric($customerId) || intval($customerId) <= 0) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderDataReceivedException::invalidValueForKey((int) $customerId, 'customer-id');
+            throw InvalidOrderDataReceivedException::invalidValueForKey((int) $customerId, self::API_KEY_CUSTOMER_ID);
         }
     }
 
@@ -93,7 +100,7 @@ final class OrderFactory
     {
         if (false === is_numeric($total)) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderDataReceivedException::invalidValueForKey((float) $total, 'total');
+            throw InvalidOrderDataReceivedException::invalidValueForKey((float) $total, self::API_KEY_TOTAL);
         }
     }
 
