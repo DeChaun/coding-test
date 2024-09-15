@@ -1,0 +1,40 @@
+{
+	"info": {
+		"_postman_id": "eceb749a-f32d-4490-b93a-ee160df4e944",
+		"name": "coding-test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1248960"
+	},
+	"item": [
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"id\": \"1\",\n  \"customer-id\": \"2\",\n  \"items\": [\n    {\n      \"product-id\": \"B102\",\n      \"quantity\": \"10\",\n      \"unit-price\": \"4.99\",\n      \"total\": \"49.90\"\n    }\n  ],\n  \"total\": \"49.90\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://coding-test.localhost:9000/order/calculate-discount",
+					"protocol": "http",
+					"host": [
+						"coding-test",
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"order",
+						"calculate-discount"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
