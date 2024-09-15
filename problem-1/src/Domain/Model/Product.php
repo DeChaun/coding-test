@@ -9,29 +9,29 @@ use LogicException;
 final readonly class Product
 {
     public function __construct(
-        private string $id,
-        private string $description,
-        private int $categoryId,
-        private float $price,   // @phpstan-ignore-line
+        private Id $id,
+        private Description $description,
+        private Category $category,
+        private Price $price,   // @phpstan-ignore-line
     ) {
     }
 
-    public function getId(): string
+    public function getId(): Id
     {
         return $this->id;
     }
 
-    public function getDescription(): string
+    public function getDescription(): Description
     {
         return $this->description;
     }
 
-    public function getCategoryId(): int
+    public function getCategory(): Category
     {
-        return $this->categoryId;
+        return $this->category;
     }
 
-    public function getPrice(): float
+    public function getPrice(): void
     {
         throw new LogicException('Do not use this getter, the correct price is on the OrderItem');
     }

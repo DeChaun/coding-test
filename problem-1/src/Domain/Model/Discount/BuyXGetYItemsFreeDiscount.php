@@ -9,6 +9,7 @@ use App\Domain\Configurator\Discount\DiscountOptionConfigurator;
 use App\Domain\Enum\DiscountType;
 use App\Domain\Model\Order;
 use App\Domain\Model\OrderItem;
+use App\Domain\Model\Price;
 
 final readonly class BuyXGetYItemsFreeDiscount implements Discount
 {
@@ -53,7 +54,7 @@ final readonly class BuyXGetYItemsFreeDiscount implements Discount
         }
 
         foreach ($consideredCategoryOrderItems as $orderItem) {
-            if ($orderItem->getQuantity() >= $this->threshold) {
+            if ($orderItem->getQuantity()->getValue() >= $this->threshold) {
                 // At least one order item will receive the discount
                 return true;
             }
@@ -62,22 +63,22 @@ final readonly class BuyXGetYItemsFreeDiscount implements Discount
         return false;
     }
 
-    public function getDiscountAmount(): ?float
+    public function getDiscountAmount(): ?Price
     {
         $totalDiscount = 0;
         $consideredOrderItems = $this->getOrderItemsForConsideredCategories();
         foreach ($consideredOrderItems as $consideredOrderItem) {
-            $iterations = floor($consideredOrderItem->getQuantity() / $this->threshold);
+            $iterations = floor($consideredOrderItem->getQuantity()->getValue() / $this->threshold);
             if (floatval(0) === $iterations) {
                 continue;
             }
 
             $numberOfFreeItems = $iterations * $this->numberOfFreeItems;    // 1 free item for every iteration
 
-            $totalDiscount += $numberOfFreeItems * $consideredOrderItem->getUnitPrice();
+            $totalDiscount += $numberOfFreeItems * $consideredOrderItem->getUnitPrice()->getValue();
         }
 
-        return $totalDiscount;
+        return Price::create($totalDiscount);
     }
 
     public function getType(): DiscountType
@@ -115,7 +116,7 @@ final readonly class BuyXGetYItemsFreeDiscount implements Discount
 
         $consideredOrderItems = [];
         foreach ($this->order->getOrderItems() as $orderItem) {
-            if (true === array_key_exists($orderItem->getProduct()->getCategoryId(), $mapper)) {
+            if (true === array_key_exists((string) $orderItem->getProduct()->getCategory()->getId(), $mapper)) {
                 $consideredOrderItems[] = $orderItem;
             }
         }

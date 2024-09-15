@@ -6,19 +6,20 @@ namespace App\Domain\Model;
 
 final readonly class Category
 {
-    public function __construct(
-        private int $id,
-        private string $name,
+    private function __construct(
+        private Id $id,
     ) {
     }
 
-    public function getId(): int
+    public static function create(int|string $categoryId): self
     {
-        return $this->id;
+        return new self(
+            Id::create($categoryId)
+        );
     }
 
-    public function getName(): string
+    public function getId(): Id
     {
-        return $this->name;
+        return $this->id;
     }
 }

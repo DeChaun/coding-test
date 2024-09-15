@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Infrastructure\Controller\Order;
 
 use App\Application\Command\Discount\ComputeDiscount;
+use App\Domain\Model\Order;
 use App\Infrastructure\Factory\OrderFactory;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Log\LoggerInterface;
 use Slim\Psr7\Request;
 use Slim\Psr7\Response;
 use Symfony\Component\Messenger\HandleTrait;
@@ -19,7 +19,6 @@ final class CalculateDiscountController
 
     public function __construct(
         private readonly OrderFactory $orderFactory,
-        private readonly LoggerInterface $logger,
         MessageBusInterface $queryBus,
     ) {
         $this->messageBus = $queryBus;
@@ -34,9 +33,11 @@ final class CalculateDiscountController
         assert(is_array($body));
 
         $order = $this->orderFactory->fromApiData($body);
+
+        /** @var Order $discountOrder */
         $discountOrder = $this->handle(new ComputeDiscount($order));
 
-        $response->getBody()->write(json_encode($discountOrder->toArray()));
+        $response->getBody()->write(json_encode($discountOrder->toArray(), JSON_THROW_ON_ERROR));
         return $response->withHeader('Content-Type', 'application/json');
     }
 }

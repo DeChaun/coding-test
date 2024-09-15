@@ -9,6 +9,7 @@ use App\Domain\Configurator\Discount\DiscountOptionConfigurator;
 use App\Domain\Enum\DiscountType;
 use App\Domain\Model\Order;
 use App\Domain\Model\OrderItem;
+use App\Domain\Model\Price;
 
 final readonly class CheapestProductPercentageDiscount implements Discount
 {
@@ -59,7 +60,7 @@ final readonly class CheapestProductPercentageDiscount implements Discount
         return false;
     }
 
-    public function getDiscountAmount(): ?float
+    public function getDiscountAmount(): ?Price
     {
         $consideredCategoryOrderItems = $this->getOrderItemsForConsideredCategory();
 
@@ -68,7 +69,7 @@ final readonly class CheapestProductPercentageDiscount implements Discount
         /** @var OrderItem $cheapestOrderItem */
         $cheapestOrderItem = $mapper[self::CHEAPEST_ORDER_ITEM];
 
-        return $cheapestOrderItem->getTotalPrice() * ($this->discountPercentage / 100);
+        return Price::create($cheapestOrderItem->getTotalPrice()->getValue() * ($this->discountPercentage / 100));
     }
 
     public function getType(): DiscountType
@@ -95,7 +96,7 @@ final readonly class CheapestProductPercentageDiscount implements Discount
     {
         $consideredOrderItems = [];
         foreach ($this->order->getOrderItems() as $orderItem) {
-            if ($orderItem->getProduct()->getCategoryId() === $this->consideredCategory) {
+            if ($orderItem->getProduct()->getCategory()->getId()->equals($this->consideredCategory)) {
                 $consideredOrderItems[] = $orderItem;
             }
         }
@@ -122,7 +123,10 @@ final readonly class CheapestProductPercentageDiscount implements Discount
                 : $cheapestProduct
             ;
 
-            $mapper[self::NUMBER_OF_PRODUCTS] = $mapper[self::NUMBER_OF_PRODUCTS] + $orderItem->getQuantity();
+            $mapper[self::NUMBER_OF_PRODUCTS] = $mapper[self::NUMBER_OF_PRODUCTS]
+                + $orderItem->getQuantity()->getValue()
+            ;
+
             $mapper[self::CHEAPEST_ORDER_ITEM] = $cheapestProduct;
             $mapper[self::ORDER_ITEMS][] = $orderItem;
         }

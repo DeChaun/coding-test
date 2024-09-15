@@ -46,9 +46,9 @@ final class OrderFactoryTest extends TestCase
 
         $this->assertInstanceOf(Order::class, $order);
 
-        $this->assertTrue($order->getId() === 1);
-        $this->assertTrue($order->getCustomer()->id === 1);
-        $this->assertTrue($order->getTotal() === 49.9);
+        $this->assertTrue($order->getId()->equals(1));
+        $this->assertTrue($order->getCustomer()->getId()->equals('1'));
+        $this->assertTrue($order->getTotal()->getValue() === 49.9);
     }
 
     public function testMissingIdResultsIntoException(): void

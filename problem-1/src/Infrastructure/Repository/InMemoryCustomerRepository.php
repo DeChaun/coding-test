@@ -6,6 +6,9 @@ namespace App\Infrastructure\Repository;
 
 use App\Domain\Exception\CustomerNotFoundException;
 use App\Domain\Model\Customer;
+use App\Domain\Model\Id;
+use App\Domain\Model\Name;
+use App\Domain\Model\Price;
 use App\Domain\Repository\CustomerRepository;
 use DateTime;
 
@@ -64,10 +67,10 @@ final class InMemoryCustomerRepository implements CustomerRepository
         assert($since instanceof DateTime);
 
         return new Customer(
-            (int) $customerData['id'],
-            (string) $customerData['name'],
+            Id::create((string) $customerData['id']),
+            Name::create((string) $customerData['name']),
             $since,
-            (float) $customerData['revenue'],
+            Price::create((float) $customerData['revenue']),
         );
     }
 }
