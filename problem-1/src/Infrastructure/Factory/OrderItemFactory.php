@@ -7,7 +7,9 @@ namespace App\Infrastructure\Factory;
 use App\Application\Command\Product\GetProduct;
 use App\Domain\Exception\Request\InvalidOrderItemDataReceivedException;
 use App\Domain\Model\OrderItem;
+use App\Domain\Model\Price;
 use App\Domain\Model\Product;
+use App\Domain\Model\Quantity;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -34,9 +36,9 @@ final class OrderItemFactory
 
         return new OrderItem(
             $product,
-            (int) $orderItemData['quantity'],
-            (float) $orderItemData['unit-price'],
-            (float) $orderItemData['total'],
+            Quantity::create($orderItemData['quantity']),       // @phpstan-ignore-line
+            Price::create($orderItemData['unit-price']),        // @phpstan-ignore-line
+            Price::create($orderItemData['total']),             // @phpstan-ignore-line
         );
     }
 

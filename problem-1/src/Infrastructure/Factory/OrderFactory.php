@@ -8,8 +8,10 @@ use App\Application\Command\Product\GetCustomer;
 use App\Domain\Exception\Request\InvalidOrderDataReceivedException;
 use App\Domain\Exception\Request\InvalidOrderItemDataReceivedException;
 use App\Domain\Model\Customer;
+use App\Domain\Model\Id;
 use App\Domain\Model\Order;
 use App\Domain\Model\OrderItem;
+use App\Domain\Model\Price;
 use Symfony\Component\Messenger\HandleTrait;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -34,10 +36,10 @@ final class OrderFactory
         $this->validateData($orderData);
 
         return new Order(
-            (int) $orderData['id'],
+            Id::create($orderData['id']),                            // @phpstan-ignore-line
             $this->getCustomer((string) $orderData['customer-id']),  // @phpstan-ignore-line
             $this->getOrderItems($orderData['items']),               // @phpstan-ignore-line
-            (float) $orderData['total'],
+            Price::create($orderData['total']),                      // @phpstan-ignore-line
         );
     }
 

@@ -8,9 +8,9 @@ final readonly class OrderItem
 {
     public function __construct(
         private Product $product,
-        private int $quantity,
-        private float $unitPrice,       // For historical reference, master of the current price is on the Product model
-        private float $totalPrice,
+        private Quantity $quantity,
+        private Price $unitPrice,       // For historical reference, master of the current price is on the Product model
+        private Price $totalPrice,
     ) {
     }
 
@@ -19,17 +19,17 @@ final readonly class OrderItem
         return $this->product;
     }
 
-    public function getQuantity(): int
+    public function getQuantity(): Quantity
     {
         return $this->quantity;
     }
 
-    public function getUnitPrice(): float
+    public function getUnitPrice(): Price
     {
         return $this->unitPrice;
     }
 
-    public function getTotalPrice(): float
+    public function getTotalPrice(): Price
     {
         return $this->totalPrice;
     }
@@ -40,10 +40,10 @@ final readonly class OrderItem
     public function toArray(): array
     {
         return [
-            'product' => $this->product->getId(),
-            'quantity' => $this->quantity,
-            'unitPrice' => $this->unitPrice,
-            'totalPrice' => $this->totalPrice,
+            'product' => (string) $this->product->getId(),
+            'quantity' => $this->quantity->getValue(),
+            'unitPrice' => $this->unitPrice->getValue(),
+            'totalPrice' => $this->totalPrice->getValue(),
         ];
     }
 }

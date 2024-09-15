@@ -5,6 +5,10 @@ declare(strict_types=1);
 namespace App\Infrastructure\Repository;
 
 use App\Domain\Exception\ProductNotFoundException;
+use App\Domain\Model\Category;
+use App\Domain\Model\Description;
+use App\Domain\Model\Id;
+use App\Domain\Model\Price;
 use App\Domain\Model\Product;
 use App\Domain\Repository\ProductRepository;
 
@@ -71,10 +75,10 @@ final class InMemoryProductRepository implements ProductRepository
         assert(array_key_exists('price', $productData) && is_numeric($productData['price']));
 
         return new Product(
-            (string) $productData['id'],
-            (string) $productData['description'],
-            (int) $productData['category'],
-            (float) $productData['price'],
+            Id::create((string) $productData['id']),
+            Description::create((string) $productData['description']),
+            Category::create((string) $productData['category']),
+            Price::create((float) $productData['price']),
         );
     }
 }

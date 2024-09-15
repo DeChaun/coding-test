@@ -7,6 +7,7 @@ namespace App\Domain\Model\Discount;
 use App\Domain\Configurator\Discount\DiscountOptionConfigurator;
 use App\Domain\Enum\DiscountType;
 use App\Domain\Model\Order;
+use App\Domain\Model\Price;
 
 interface Discount
 {
@@ -17,7 +18,7 @@ interface Discount
 
     public function isApplicable(): bool;
 
-    public function getDiscountAmount(): ?float;
+    public function getDiscountAmount(): ?Price;
 
     public function getType(): DiscountType;
 

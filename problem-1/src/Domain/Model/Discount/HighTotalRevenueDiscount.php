@@ -8,6 +8,7 @@ use App\Domain\Configurator\Discount\DiscountOptionConfigurator;
 use App\Domain\Configurator\Discount\HighTotalRevenueOptionConfigurator as Configurator;
 use App\Domain\Enum\DiscountType;
 use App\Domain\Model\Order;
+use App\Domain\Model\Price;
 
 final readonly class HighTotalRevenueDiscount implements Discount
 {
@@ -35,15 +36,15 @@ final readonly class HighTotalRevenueDiscount implements Discount
 
     public function isApplicable(): bool
     {
-        return $this->order->getCustomer()->getRevenue() > $this->totalRevenueBoundary;
+        return $this->order->getCustomer()->getRevenue()->getValue() > $this->totalRevenueBoundary;
     }
 
-    public function getDiscountAmount(): ?float
+    public function getDiscountAmount(): ?Price
     {
-        $total = $this->order->getDiscountedTotal() ?? $this->order->getTotal();
+        $total = $this->order->getDiscountedTotal()?->getValue() ?? $this->order->getTotal()->getValue();
 
         // Round to 4 decimals as this may introduce floating-point issues (e.g. rounding to 88.80000000000001)
-        return round($total * ($this->discountPercentage / 100), 4);
+        return Price::create(round($total * ($this->discountPercentage / 100), 4));
     }
 
     public function getType(): DiscountType
@@ -58,7 +59,7 @@ final readonly class HighTotalRevenueDiscount implements Discount
             'This results in € %s discount',
             $this->totalRevenueBoundary,
             $this->discountPercentage,
-            $this->getDiscountAmount(),
+            $this->getDiscountAmount()?->getValue(true),
         );
     }
 }

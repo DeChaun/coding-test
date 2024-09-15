@@ -44,10 +44,10 @@ final class OrderItemFactoryTest extends TestCase
 
         $this->assertInstanceOf(OrderItem::class, $orderItem);
 
-        $this->assertTrue($orderItem->getProduct()->getId() === 'B102');
-        $this->assertTrue($orderItem->getQuantity() === 10);
-        $this->assertTrue($orderItem->getUnitPrice() === 4.99);
-        $this->assertTrue($orderItem->getTotalPrice() === 49.9);
+        $this->assertTrue($orderItem->getProduct()->getId()->equals('B102'));
+        $this->assertTrue($orderItem->getQuantity()->getValue() === 10);
+        $this->assertTrue($orderItem->getUnitPrice()->getValue() === 4.99);
+        $this->assertTrue($orderItem->getTotalPrice()->getValue() === 49.9);
     }
 
     public function testMissingProductIdResultsIntoException(): void

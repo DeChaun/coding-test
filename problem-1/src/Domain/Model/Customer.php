@@ -9,19 +9,19 @@ use DateTime;
 final readonly class Customer
 {
     public function __construct(
-        public int $id,
-        public string $name,
+        public Id $id,
+        public Name $name,
         public DateTime $since,
-        public float $revenue,
+        public Price $revenue,
     ) {
     }
 
-    public function getId(): int
+    public function getId(): Id
     {
         return $this->id;
     }
 
-    public function getName(): string
+    public function getName(): Name
     {
         return $this->name;
     }
@@ -31,7 +31,7 @@ final readonly class Customer
         return $this->since;
     }
 
-    public function getRevenue(): float
+    public function getRevenue(): Price
     {
         return $this->revenue;
     }
