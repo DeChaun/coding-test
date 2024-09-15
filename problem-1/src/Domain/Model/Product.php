@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Domain\Model;
 
+use LogicException;
+
 final readonly class Product
 {
     public function __construct(
         private string $id,
         private string $description,
         private int $categoryId,
-        private float $price,
+        private float $price,   // @phpstan-ignore-line
     ) {
     }
 
@@ -31,6 +33,6 @@ final readonly class Product
 
     public function getPrice(): float
     {
-        return $this->price;
+        throw new LogicException('Do not use this getter, the correct price is on the OrderItem');
     }
 }

@@ -72,7 +72,7 @@ final class OrderItemFactory
     {
         if (false === is_string($productId)) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderItemDataReceivedException::invalidValueForKey((string) $productId, 'total');
+            throw InvalidOrderItemDataReceivedException::invalidValueForKey((string) $productId, 'product-id');
         }
     }
 
@@ -83,7 +83,7 @@ final class OrderItemFactory
     {
         if (false === is_numeric($quantity) || intval($quantity) <= 0) {
             // @phpstan-ignore-next-line - ignore because check is done, though not registered by phpstan
-            throw InvalidOrderItemDataReceivedException::invalidValueForKey((int) $quantity, 'customer-id');
+            throw InvalidOrderItemDataReceivedException::invalidValueForKey((int) $quantity, 'quantity');
         }
     }
 

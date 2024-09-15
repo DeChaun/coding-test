@@ -6,6 +6,7 @@ namespace Tests\Domain\Model\Discount;
 
 use App\Domain\Configurator\Discount\BuyXGetYItemsFreeOptionConfigurator;
 use App\Domain\Configurator\Discount\DiscountOptionConfigurator;
+use App\Domain\Enum\DiscountType;
 use App\Domain\Model\Customer;
 use App\Domain\Model\Discount\BuyXGetYItemsFreeDiscount;
 use App\Domain\Model\Order;
@@ -119,6 +120,14 @@ final class BuyXGetYItemsFreeDiscountTest extends TestCase
 
         $discount = new BuyXGetYItemsFreeDiscount($order, $this->configurator);
         $this->assertEquals(128, $discount->getDiscountAmount());
+    }
+
+    public function testTypeIsCorrect(): void
+    {
+        $order = $this->getMockOrder([]);
+
+        $discount = new BuyXGetYItemsFreeDiscount($order, $this->configurator);
+        $this->assertEquals(DiscountType::BuyXGetYItemsFree, $discount->getType());
     }
 
     /**

@@ -82,7 +82,7 @@ final readonly class BuyXGetYItemsFreeDiscount implements Discount
 
     public function getType(): DiscountType
     {
-        return DiscountType::HighTotalRevenueDiscount;
+        return DiscountType::BuyXGetYItemsFree;
     }
 
     public function getExplanation(): string
